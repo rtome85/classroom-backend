@@ -11,10 +11,15 @@ router.get("/", async (req, res) => {
 		const { search, department, page, limit } = req.query;
 		const pageValue = Array.isArray(page) ? page[0] : page;
 		const limitValue = Array.isArray(limit) ? limit[0] : limit;
-		const parsedPage = Number.parseInt(pageValue ?? "1", 10);
-		const parsedLimit = Number.parseInt(limitValue ?? "10", 10);
+		const parsedPage = Number.parseInt(String(pageValue ?? "1"), 10);
+		const parsedLimit = Number.parseInt(String(limitValue ?? "10"), 10);
 
-		if (!Number.isFinite(parsedPage) || parsedPage < 1 || !Number.isFinite(parsedLimit) || parsedLimit < 1) {
+		if (
+			!Number.isFinite(parsedPage) ||
+			parsedPage < 1 ||
+			!Number.isFinite(parsedLimit) ||
+			parsedLimit < 1
+		) {
 			return res.status(400).json({ error: "Invalid pagination parameters." });
 		}
 
