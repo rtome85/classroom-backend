@@ -8,10 +8,19 @@ const router = express.Router();
 //Get all subjects with optional search, filtering and pagination
 router.get("/", async (req, res) => {
 	try {
-		const { search, department, page = 1, limit = 10 } = req.query;
+		const { search, department, page, limit } = req.query;
+		const pageValue = Array.isArray(page) ? page[0] : page;
+		const limitValue = Array.isArray(limit) ? limit[0] : limit;
+		const parsedPage = Number.parseInt(pageValue ?? "1", 10);
+		const parsedLimit = Number.parseInt(limitValue ?? "10", 10);
 
-		const currentPage = Math.max(1, +page);
-		const limitPerPage = Math.max(1, +limit);
+		if (!Number.isFinite(parsedPage) || parsedPage < 1 || !Number.isFinite(parsedLimit) || parsedLimit < 1) {
+			return res.status(400).json({ error: "Invalid pagination parameters." });
+		}
+
+		const MAX_LIMIT = 100;
+		const currentPage = parsedPage;
+		const limitPerPage = Math.min(parsedLimit, MAX_LIMIT);
 
 		const offset = (currentPage - 1) * limitPerPage; //how many records to skip to get to the next page
 
