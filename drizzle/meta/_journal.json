@@ -8,6 +8,13 @@
       "when": 1769184666834,
       "tag": "0000_aspiring_invaders",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1769469834812,
+      "tag": "0001_blushing_electro",
+      "breakpoints": true
     }
   ]
 }
