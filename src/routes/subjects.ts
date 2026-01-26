@@ -8,7 +8,6 @@ const router = express.Router();
 //Get all subjects with optional search, filtering and pagination
 router.get("/", async (req, res) => {
 	try {
-		console.log("hey");
 		const { search, department, page, limit } = req.query;
 		const pageValue = Array.isArray(page) ? page[0] : page;
 		const limitValue = Array.isArray(limit) ? limit[0] : limit;
