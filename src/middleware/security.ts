@@ -8,6 +8,7 @@ const securityMiddleware = async (
 	next: NextFunction,
 ) => {
 	if (process.env.NODE_ENV === "test") return next();
+	console.log(process.env.NODE_ENV);
 
 	try {
 		const role: RateLimitRole = req.user?.role ?? "guest";
