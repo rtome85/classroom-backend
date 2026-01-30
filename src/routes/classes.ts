@@ -93,33 +93,39 @@ router.get("/", async (req, res) => {
 
 // Gets the class details with teacher, subject and department
 router.get("/:id", async (req, res) => {
-	const classId = Number(req.params.id);
+	try {
+		const classId = Number(req.params.id);
 
-	if (!Number.isFinite(classId))
-		return res.status(400).json({ error: "No class found." });
+		if (!Number.isFinite(classId))
+			return res.status(400).json({ error: "No class found." });
 
-	const [classDetails] = await db
-		.select({
-			...getTableColumns(classes),
-			subject: {
-				...getTableColumns(subjects),
-			},
-			department: {
-				...getTableColumns(departments),
-			},
-			teacher: {
-				...getTableColumns(user),
-			},
-		})
-		.from(classes)
-		.leftJoin(subjects, eq(classes.subjectId, subjects.id))
-		.leftJoin(user, eq(classes.teacherId, user.id))
-		.leftJoin(departments, eq(subjects.departmentId, departments.id))
-		.where(eq(classes.id, classId));
+		const [classDetails] = await db
+			.select({
+				...getTableColumns(classes),
+				subject: {
+					...getTableColumns(subjects),
+				},
+				department: {
+					...getTableColumns(departments),
+				},
+				teacher: {
+					...getTableColumns(user),
+				},
+			})
+			.from(classes)
+			.leftJoin(subjects, eq(classes.subjectId, subjects.id))
+			.leftJoin(user, eq(classes.teacherId, user.id))
+			.leftJoin(departments, eq(subjects.departmentId, departments.id))
+			.where(eq(classes.id, classId));
 
-	if (!classDetails) return res.status(404).json({ error: "No Class found." });
+		if (!classDetails)
+			return res.status(404).json({ error: "No Class found." });
 
-	res.status(200).json({ data: classDetails });
+		res.status(200).json({ data: classDetails });
+	} catch (error) {
+		console.error(`GET /classes/:id error ${error}`);
+		res.status(500).json({ error: "Failed to get class." });
+	}
 });
 
 router.post("/", async (req, res) => {
