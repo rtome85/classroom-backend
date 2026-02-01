@@ -10,6 +10,7 @@ import securityMiddleware from "./middleware/security";
 import { toNodeHandler } from "better-auth/node";
 import { auth } from "./lib/auth";
 import { Agent } from "node:http";
+import departmentsRouter from "./routes/departments";
 
 const app = express();
 const PORT = 8000;
@@ -37,6 +38,7 @@ app.use(securityMiddleware);
 app.use("/api/subjects", subjectsRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/classes", classesRouter);
+app.use("/api/departments", departmentsRouter);
 
 // Root GET route
 app.get("/", (req, res) => {
