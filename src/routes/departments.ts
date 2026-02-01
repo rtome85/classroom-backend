@@ -15,19 +15,36 @@ const router = express.Router();
 // Get all departments with optional search and pagination
 router.get("/", async (req, res) => {
 	try {
-		const { search, page = 1, limit = 10 } = req.query;
+		const { search, page, limit } = req.query;
 
-		const currentPage = Math.max(1, +page);
-		const limitPerPage = Math.max(1, +limit);
+		const pageParam = Array.isArray(page) ? page[0] : page;
+		const limitParam = Array.isArray(limit) ? limit[0] : limit;
+		const parsedPage = Number.parseInt(String(pageParam ?? "1"), 10);
+		const parsedLimit = Number.parseInt(String(limitParam ?? "10"), 10);
+
+		if (
+			!Number.isFinite(parsedPage) ||
+			parsedPage < 1 ||
+			!Number.isFinite(parsedLimit) ||
+			parsedLimit < 1
+		) {
+			return res.status(400).json({ error: "Invalid pagination parameters." });
+		}
+
+		const MAX_LIMIT = 100;
+		const currentPage = parsedPage;
+		const limitPerPage = Math.min(parsedLimit, MAX_LIMIT);
+		const searchTerm = typeof search === "string" ? search.trim() : undefined;
+
 		const offset = (currentPage - 1) * limitPerPage;
 
 		const filterConditions = [];
 
-		if (search) {
+		if (searchTerm) {
 			filterConditions.push(
 				or(
-					ilike(departments.name, `%${search}%`),
-					ilike(departments.code, `%${search}%`),
+					ilike(departments.name, `%${searchTerm}%`),
+					ilike(departments.code, `%${searchTerm}%`),
 				),
 			);
 		}
